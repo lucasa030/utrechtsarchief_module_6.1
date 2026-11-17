@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Projectplanner – Het Utrechts Archief</title>
+<style>
+:root{--navy:#010044;--gold:#b2910a;--paper:#f5f2e9;--white:#fff;--ink:#17172b;--muted:#66677b;--line:#dedbd1;--green:#dce9dd}
+*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.55 Arial,Helvetica,sans-serif}
+header{background:var(--navy);color:white;padding:30px max(22px,calc((100% - 1120px)/2));}
+.kicker{text-transform:uppercase;letter-spacing:.13em;font-size:.75rem;color:#e6d58b;font-weight:bold}
+header h1{font-size:clamp(2rem,5vw,3.4rem);line-height:1.05;margin:10px 0}
+header p{max-width:700px;color:#e5e4ef;margin:12px 0 0}
+nav{display:flex;gap:8px;flex-wrap:wrap;margin-top:24px}
+nav a{color:white;text-decoration:none;border:1px solid #77769a;padding:8px 13px;border-radius:999px;font-size:.9rem}
+nav a:hover,nav a:focus{background:white;color:var(--navy)}
+main{max-width:1120px;margin:28px auto;padding:0 20px}
+.intro{display:grid;grid-template-columns:1.5fr 1fr;gap:18px;margin-bottom:22px}
+.panel,.phase,.log-card{background:var(--white);border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:0 4px 16px #17172b0a}
+.panel h2,.section-title{color:var(--navy);margin:0 0 10px}
+.small{color:var(--muted);font-size:.9rem}
+.stat{font-size:2rem;font-weight:800;color:var(--navy)}
+.progress{height:10px;background:#e8e6df;border-radius:20px;overflow:hidden;margin:12px 0}
+.progress span{display:block;height:100%;width:0;background:var(--gold);transition:width .2s}
+section{margin:34px 0;scroll-margin-top:18px}
+.section-head{display:flex;align-items:end;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.section-title{font-size:1.65rem}
+.phases{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.phase-top{display:flex;justify-content:space-between;gap:10px;align-items:center}
+.phase h3{margin:5px 0 8px;color:var(--navy)}
+.tag{background:#f1ebd2;color:#6d5700;padding:4px 9px;border-radius:999px;font-size:.75rem;font-weight:bold}
+.task{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-top:1px solid #efede7}
+.task input{margin-top:5px;accent-color:var(--navy);width:17px;height:17px;flex:0 0 auto}
+.task.done span{text-decoration:line-through;color:#85858d}
+.task span{flex:1}
+button{border:0;background:var(--navy);color:white;padding:10px 15px;border-radius:9px;font-weight:bold;cursor:pointer}
+button.secondary{background:#eeeae0;color:var(--navy);border:1px solid var(--line)}
+button:hover{filter:brightness(1.15)}
+.log-layout{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+label{display:block;font-size:.88rem;font-weight:bold;color:var(--navy);margin:10px 0 5px}
+input[type=text],input[type=date],textarea,select{width:100%;padding:11px;border:1px solid #cbc8be;border-radius:8px;font:inherit;background:white}
+textarea{min-height:105px;resize:vertical}
+.log-entry{border-left:4px solid var(--gold);padding:4px 0 8px 14px;margin:16px 0}
+.log-entry h3{margin:0;color:var(--navy);font-size:1rem}
+.log-entry p{margin:5px 0;white-space:pre-wrap}
+.entry-meta{font-size:.8rem;color:var(--muted)}
+ul{padding-left:20px}
+.note{background:#f4f0df;border:1px solid #e7ddaf;border-radius:12px;padding:14px}
+footer{background:var(--navy);color:#e5e4ef;padding:22px;text-align:center;margin-top:40px;font-size:.85rem}
+@media(max-width:760px){.intro,.phases,.log-layout{grid-template-columns:1fr}main{padding:0 14px}header{padding:26px 18px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+</style>
+</head>
+<body>
+<header>
+  <div class="kicker">Projectoverzicht • 2026–2027</div>
+  <h1>Het Utrechts Archief</h1>
+  <p>Mijn planning en logboek voor het maken van een interactieve bezoekerswebapp en een eenvoudig CMS voor medewerkers.</p>
+  <nav><a href="#overzicht">Overzicht</a><a href="#planning">Planning</a><a href="#opdracht">Opdracht</a><a href="#logboek">Logboek</a></nav>
+</header>
+<main>
+  <div class="intro" id="overzicht">
+    <div class="panel">
+      <h2>Waar werk ik aan?</h2>
+      <p>Een interactieve webapp waarmee bezoekers op een aantrekkelijke manier door verhalen en beelden uit de geschiedenis van Utrecht kunnen ontdekken. Daarnaast maak ik een CMS waarmee medewerkers teksten en onderdelen kunnen aanpassen zonder technische kennis.</p>
+      <p class="small">De planning is opgebouwd in fases. Vink taken af wanneer je ze hebt afgerond. Je voortgang wordt automatisch bewaard in deze browser.</p>
+      <div class="progress"><span id="progressBar"></span></div>
+      <strong id="progressText">0% afgerond</strong>
+    </div>
+    <div class="panel">
+      <div class="small">Afgeronde taken</div><div class="stat" id="doneCount">0 / 0</div>
+      <p class="small">Werk de planning stap voor stap af. Voeg onderaan je logboek toe wat je hebt gedaan, geleerd of nog moet oplossen.</p>
+      <button class="secondary" onclick="resetTasks()">Planning opnieuw instellen</button>
+    </div>
+  </div>
+
+  <section id="planning">
+    <div class="section-head"><div><div class="kicker" style="color:#8a7000">Van idee tot oplevering</div><h2 class="section-title">Mijn planning</h2></div><span class="small">Volgorde: boven naar beneden</span></div>
+    <div class="phases" id="phases"></div>
+  </section>
+
+  <section id="opdracht">
+    <h2 class="section-title">Wat moet er in de opdracht?</h2>
+    <div class="panel">
+      <h3>Bezoekerswebapp</h3>
+      <ul>
+        <li>Een duidelijke startpagina met een korte uitleg. De uitleg mag in een popup staan die bezoekers kunnen sluiten.</li>
+        <li>De video vormt de basis van de webapp. De manier waarop bezoekers de video bedienen mag ik zelf kiezen.</li>
+        <li>Navigatie via slepen/touch of knoppen/pijlen. De bediening moet ook op touchscreens werken.</li>
+        <li>De toepassing moet er ook van een afstand aantrekkelijk uitzien, zelfs als niemand ermee bezig is.</li>
+        <li>Een quiz of spel, animaties en een mini-kaart/locatie-indicator zijn optioneel.</li>
+        <li>Geluidseffecten mogen; achtergrondmuziek is niet de bedoeling.</li>
+      </ul>
+      <h3>CMS voor medewerkers</h3>
+      <ul>
+        <li>Medewerkers moeten teksten en onderdelen eenvoudig kunnen aanpassen zonder programmeerkennis.</li>
+        <li>De CMS-omgeving moet duidelijk en gebruiksvriendelijk zijn.</li>
+      </ul>
+      <h3>Vormgeving, techniek en toegankelijkheid</h3>
+      <ul>
+        <li>Het logo van Het Utrechts Archief en een informatievenster/colofon met algemene informatie, applicatie-informatie en makers.</li>
+        <li>De aangeleverde huisstijlgids gebruiken. In het voorbeeld zijn de kleuren donkerpaars en okergeel als basis gebruikt.</li>
+        <li>Taalinstelling is een wens, geen verplicht onderdeel.</li>
+        <li>Toegankelijkheid is belangrijk: richtlijn WCAG 2.1 AA.</li>
+        <li>Responsive ontwerp voor verschillende schermformaten en beeldverhoudingen, ongeveer op het formaat van een digitaal whiteboard.</li>
+        <li>Geen functies die alleen met mouseover werken.</li>
+      </ul>
+      <div class="note"><strong>Let op:</strong> de huidige demo is een eerste voorbeeld. Het logo is nog een tekstuele placeholder en de illustraties zijn geen echte archiefbeelden of video. Ook is de CMS-demo nog niet gekoppeld aan een server, database of accountsysteem.</div>
+    </div>
+  </section>
+
+  <section id="logboek">
+    <div class="section-head"><div><div class="kicker" style="color:#8a7000">Bijhouden van mijn werk</div><h2 class="section-title">Logboek</h2></div><button class="secondary" onclick="exportLog()">Logboek downloaden (.txt)</button></div>
+    <div class="log-layout">
+      <div class="panel">
+        <h3>Nieuwe logboeknotitie</h3>
+        <form id="logForm">
+          <label for="logDate">Datum</label><input id="logDate" type="date" required>
+          <label for="logTitle">Waar heb ik aan gewerkt?</label><input id="logTitle" type="text" placeholder="Bijvoorbeeld: eerste ontwerp gemaakt" required>
+          <label for="logBody">Wat heb ik gedaan en geleerd?</label><textarea id="logBody" placeholder="Beschrijf kort wat je hebt gedaan, wat goed ging en wat lastig was..." required></textarea>
+          <label for="logNext">Wat ga ik hierna doen?</label><textarea id="logNext" placeholder="Welke stap pak ik hierna op?"></textarea>
+          <button type="submit" style="margin-top:12px">Notitie toevoegen</button>
+        </form>
+      </div>
+      <div class="panel">
+        <h3>Mijn notities</h3><p class="small">De notities worden lokaal in deze browser opgeslagen. Download regelmatig een kopie.</p>
+        <div id="logEntries"></div>
+      </div>
+    </div>
+  </section>
+</main>
+<footer>Projectplanner – Het Utrechts Archief • Pas de planning en notities aan terwijl je werkt.</footer>
+<script>
+const phases = [
+ {name:"1. Opdracht begrijpen",tag:"Start",tasks:[
+  "De volledige opdracht en aanvullende eisen verzamelen",
+  "De huisstijlgids bekijken en belangrijke kleuren/regels noteren",
+  "Duidelijk opschrijven wat de bezoekerswebapp moet kunnen",
+  "Duidelijk opschrijven wat medewerkers in het CMS moeten kunnen",
+  "Controleren welke video, teksten, foto's en andere bestanden beschikbaar zijn",
+  "Vragen noteren die ik nog aan de opdrachtgever of docent moet stellen"
+ ]},
+ {name:"2. Idee en ontwerp",tag:"Voorbereiding",tasks:[
+  "Een concept bedenken voor de interactieve ervaring",
+  "Een eenvoudige schets/wireframe maken van het startscherm",
+  "Bepalen hoe bezoekers door de video of hoofdstukken navigeren",
+  "De vormgeving bepalen met de kleuren en stijl van Het Utrechts Archief",
+  "Een ontwerp maken voor het informatievenster en de colofon",
+  "Een apart ontwerp maken voor het CMS"
+ ]},
+ {name:"3. Bezoekerswebapp bouwen",tag:"Ontwikkeling",tasks:[
+  "De basisstructuur van de website maken",
+  "De startpagina met korte uitleg bouwen",
+  "De video en navigatie toevoegen",
+  "Knoppen of touchbediening maken om door onderdelen te gaan",
+  "De hoofdstukken, teksten en beelden toevoegen",
+  "Geluidseffecten toevoegen waar dit iets verbetert",
+  "Het informatievenster en de colofon toevoegen",
+  "Optionele onderdelen bekijken: quiz, animatie of mini-kaart"
+ ]},
+ {name:"4. CMS bouwen",tag:"Ontwikkeling",tasks:[
+  "Een overzichtelijk CMS-scherm maken",
+  "Medewerkers teksten en titels laten aanpassen",
+  "Een manier maken om wijzigingen op te slaan",
+  "Een voorbeeld/preview tonen van aangepaste inhoud",
+  "Controleren of het CMS zonder technische kennis te begrijpen is"
+ ]},
+ {name:"5. Testen en verbeteren",tag:"Controle",tasks:[
+  "Testen op laptop, touchscreen en verschillende schermformaten",
+  "Controleren of alle knoppen met touch en toetsenbord werken",
+  "Controleren dat informatie niet alleen via mouseover zichtbaar is",
+  "Contrast, tekst, focus en bediening controleren met WCAG 2.1 AA als richtlijn",
+  "Controleren of de toepassing ook op afstand duidelijk en aantrekkelijk is",
+  "Fouten oplossen en feedback verwerken"
+ ]},
+ {name:"6. Afronden en opleveren",tag:"Oplevering",tasks:[
+  "Het echte logo en de juiste archiefmedia toevoegen",
+  "De teksten en informatie in de colofon controleren",
+  "De website en het CMS nog een keer volledig testen",
+  "Uitleg/documentatie schrijven over het gebruik van de webapp en CMS",
+  "De bestanden netjes ordenen en de eindversie klaarzetten",
+  "Een korte presentatie of demonstratie voorbereiden"
+ ]}
+];
+const taskKey="hua_planner_tasks_v1", logKey="hua_planner_logs_v1";
+let checked=JSON.parse(localStorage.getItem(taskKey)||"{}");
+let logs=JSON.parse(localStorage.getItem(logKey)||"null");
+if(!logs) logs=[
+ {date:"2026-11-12",title:"Opdracht en aanvullende eisen doorgenomen",body:"De opdracht voor Het Utrechts Archief bekeken. De extra eisen voor een bezoekerswebapp en een CMS voor medewerkers verzameld. Ook aandachtspunten zoals huisstijl, toegankelijkheid, touchbediening en responsive design genoteerd.",next:"De opdracht verder vertalen naar een duidelijk ontwerp en een planning."},
+ {date:"2026-11-13",title:"Eerste websitevoorbeeld en projectplanning",body:"Een eerste prototype als voorbeeld gemaakt. Daarin staan een startscherm, hoofdstukken/tijdlijn, navigatie, informatievenster en een eenvoudige CMS-demo. Ook deze planning en het logboek opgezet.",next:"De volledige briefing en beschikbare video/archiefmaterialen controleren. Daarna het ontwerp en prototype verbeteren."}
+];
+function renderPhases(){
+ const root=document.getElementById("phases");root.innerHTML="";
+ phases.forEach((p,pi)=>{
+  const card=document.createElement("article");card.className="phase";
+  const top=document.createElement("div");top.className="phase-top";
+  top.innerHTML=`<span class="tag">${p.tag}</span><span class="small">${p.tasks.filter((_,ti)=>checked[pi+"-"+ti]).length}/${p.tasks.length} klaar</span>`;
+  const h=document.createElement("h3");h.textContent=p.name;card.append(top,h);
+  p.tasks.forEach((task,ti)=>{
+   const id=pi+"-"+ti, row=document.createElement("label");row.className="task"+(checked[id]?" done":"");
+   const cb=document.createElement("input");cb.type="checkbox";cb.checked=!!checked[id];cb.addEventListener("change",()=>{checked[id]=cb.checked;localStorage.setItem(taskKey,JSON.stringify(checked));renderPhases();updateProgress()});
+   const span=document.createElement("span");span.textContent=task;row.append(cb,span);card.append(row);
+  });root.append(card);
+ });
+ updateProgress();
+}
+function updateProgress(){let total=phases.reduce((s,p)=>s+p.tasks.length,0),done=Object.values(checked).filter(Boolean).length,pct=Math.round(done/total*100);document.getElementById("doneCount").textContent=done+" / "+total;document.getElementById("progressText").textContent=pct+"% afgerond";document.getElementById("progressBar").style.width=pct+"%"}
+function resetTasks(){if(confirm("Wil je alle vinkjes uit de planning verwijderen?")){checked={};localStorage.removeItem(taskKey);renderPhases()}}
+function renderLogs(){const root=document.getElementById("logEntries");root.innerHTML="";if(!logs.length){root.textContent="Nog geen notities toegevoegd.";return}
+ [...logs].sort((a,b)=>b.date.localeCompare(a.date)).forEach((l,index)=>{
+  const d=document.createElement("div");d.className="log-entry";
+  const date=document.createElement("div");date.className="entry-meta";date.textContent=new Date(l.date+"T12:00:00").toLocaleDateString("nl-NL",{day:"numeric",month:"long",year:"numeric"});
+  const h=document.createElement("h3");h.textContent=l.title;
+  const body=document.createElement("p");body.textContent=l.body;
+  d.append(date,h,body);
+  if(l.next){const n=document.createElement("p");n.innerHTML="<strong>Volgende stap:</strong> ";n.append(document.createTextNode(l.next));d.append(n)}
+  const del=document.createElement("button");del.className="secondary";del.textContent="Verwijderen";del.type="button";del.style.marginTop="5px";del.addEventListener("click",()=>{if(confirm("Deze notitie verwijderen?")){logs.splice(logs.indexOf(l),1);saveLogs()}});d.append(del);root.append(d);
+ });
+}
+function saveLogs(){localStorage.setItem(logKey,JSON.stringify(logs));renderLogs()}
+document.getElementById("logForm").addEventListener("submit",e=>{e.preventDefault();logs.push({date:document.getElementById("logDate").value,title:document.getElementById("logTitle").value.trim(),body:document.getElementById("logBody").value.trim(),next:document.getElementById("logNext").value.trim()});saveLogs();e.target.reset();document.getElementById("logDate").value=new Date().toISOString().slice(0,10)});
+function exportLog(){let txt="LOGBOEK – HET UTRECHTS ARCHIEF\n\n"+[...logs].sort((a,b)=>a.date.localeCompare(b.date)).map(l=>`${l.date} – ${l.title}\n${l.body}\nVolgende stap: ${l.next||"-"}\n`).join("\n");const blob=new Blob([txt],{type:"text/plain;charset=utf-8"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="logboek-utrechts-archief.txt";a.click();URL.revokeObjectURL(url)}
+document.getElementById("logDate").value=new Date().toISOString().slice(0,10);
+renderPhases();renderLogs();
+</script>
+</body>
+</html>
